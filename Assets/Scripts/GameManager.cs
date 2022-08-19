@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     }
 
     public int quarantineday = 0;
+    public int exp = 0, level = 0;
 
     public void DayEnd()
     {
