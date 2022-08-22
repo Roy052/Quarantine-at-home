@@ -22,6 +22,13 @@ public class GameManager : MonoBehaviour
 
     public int quarantineday = 0;
     public int exp = 0, level = 0;
+    public int[] upgradeProgress = new int[6];
+
+    private void Start()
+    {
+        for (int i = 0; i < 6; i++)
+            upgradeProgress[i] = 0;
+    }
 
     public void DayEnd()
     {

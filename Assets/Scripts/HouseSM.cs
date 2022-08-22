@@ -11,10 +11,12 @@ public class HouseSM : MonoBehaviour
     public Slider expSlider;
     int exp = 0, level = 0;
     int activityNum = -1;
-    int[] activateDuration = new int[3] { 0, 0, 0 };
-    int[] activityCooldown = new int[3] { 0, 0, 0 };
-    int[] upgradeProgress = new int[3] { 0, 0, 0 };
+    int[,] activateDuration = new int[6, 3];
+    int[,] activityCooldown = new int[6, 3];
+    bool[] activityEnabled = new bool[6];
+    int[] upgradeProgress = new int[6];
     public Button[] activateButtons, upgradeButtons;
+    public Text[] upgradeTexts;
 
     int hours = 10, minutes = 0, seconds = 0;
     int quarantineday = 0;
@@ -27,32 +29,67 @@ public class HouseSM : MonoBehaviour
         quarantineday = gm.quarantineday;
         exp = gm.exp;
         level = gm.level;
+        for (int i = 0; i < 6; i++)
+            upgradeProgress[i] = gm.upgradeProgress[i];
 
         timerText.text = "Day - " + quarantineday + ", " 
             + hours + ":" + minutes.ToString("D2") + ":" + seconds.ToString("D2") + "";
         expText.text = exp + "/" + Data.expGaps[level];
         expSlider.value = exp / Data.expGaps[level];
+
+        //Init
+        for (int i = 0; i < 6; i++)
+        {
+            activityEnabled[i] = true;
+            for(int j = 0; j < 3; j++)
+            {
+                activateDuration[i, j] = 0;
+                activityCooldown[i, j] = 0;
+            }
+
+            Debug.Log(i + ", " + upgradeProgress[i] + " : ");
+            upgradeTexts[i].text = Data.upgradeValue[i, upgradeProgress[i]] + " to Upgrade";
+        }
+           
+        
     }
     private void Update()
     {
         
         secondCheck += Time.deltaTime;
         
-        if(secondCheck >= 1)
+        //Seconds Flow
+        if((activityNum != -1 && secondCheck >= 1.0 / Data.activityTimeValue[activityNum]) || secondCheck >= 1)
         {
             if (activityNum != -1)
             {
-                TimeFlows(Data.activityTimeValue[activityNum]);
-                activateDuration[activityNum]--;
-                if (activateDuration[activityNum] <= 0) activityNum = -1;
+                TimeFlows(1);
+
+                //Acitity End
+                if(hours > activateDuration[activityNum,0] || 
+                    (hours == activateDuration[activityNum, 0] && minutes >= activateDuration[activityNum,1]))
+                {
+                    activityNum = -1;
+                }
+
+                //Cooldown End
+                for(int i = 0; i < 6; i++)
+                {
+                    if(activityEnabled[i] == false)
+                    {
+                        if (hours > activityCooldown[i, 0] ||
+                    (hours == activityCooldown[i, 0] && minutes >= activityCooldown[i, 1]))
+                        {
+                            activityEnabled[i] = true;
+                        }
+                    }
+                }
+                
             }
             else
             {
                 TimeFlows(1);
             }
-
-            for (int i = 0; i < 3; i++)
-                if (activityCooldown[i] > 0) activityCooldown[i]--;
 
             secondCheck = 0;
         }
@@ -64,11 +101,14 @@ public class HouseSM : MonoBehaviour
             quarantineday++;
             gm.quarantineday = quarantineday;
             gm.level = level;
+            for (int i = 0; i < 6; i++)
+                gm.upgradeProgress[i] = upgradeProgress[i];
 
             gm.DayEnd();
         }
 
-        for(int i = 0; i < 3; i++)
+        //Button Enable
+        for(int i = 0; i < 6; i++)
         {
             if(activityNum != -1)
             {
@@ -76,8 +116,16 @@ public class HouseSM : MonoBehaviour
             }
             else
             {
-                if (activityCooldown[i] != 0) activateButtons[i].enabled = false;
-                else activateButtons[i].enabled = true;
+                if (activityEnabled[i])
+                {
+                    activateButtons[i].enabled = true;
+                    activateButtons[i].GetComponent<Image>().color = Color.white;
+                }
+                else
+                {
+                    activateButtons[i].enabled = false;
+                    activateButtons[i].GetComponent<Image>().color = Color.gray;
+                }
             }
 
             if (exp >= Data.upgradeValue[i, upgradeProgress[i]])
@@ -104,8 +152,7 @@ public class HouseSM : MonoBehaviour
     {
         activityNum = num;
         activityText.text = Data.activityName[num];
-        activateDuration[num] = (int)(Data.activityDuration[num] * 3600);
-        activityCooldown[num] = (int) (Data.activityDuration[num] * 3600 + Data.activityCooldown[num] * 3600);
+        AddDurationCooldown(num);
 
     }
 
@@ -113,6 +160,7 @@ public class HouseSM : MonoBehaviour
     {
         GainExp(-Data.upgradeValue[num, upgradeProgress[num]]);
         upgradeProgress[num]++;
+        upgradeTexts[num].text = Data.upgradeValue[num, upgradeProgress[num]] + " to Upgrade";
     }
 
     public void TimeFlows(int ammount)
@@ -142,5 +190,31 @@ public class HouseSM : MonoBehaviour
             exp = 0;
         }
         expText.text = exp + "/" + Data.expGaps[level];
+    }
+
+    public void AddDurationCooldown(int activityNum)
+    {
+        activateDuration[activityNum, 0] = hours;
+        activateDuration[activityNum, 1] = minutes;
+        activateDuration[activityNum, 2] = seconds;
+
+        activityCooldown[activityNum, 0] = hours;
+        activityCooldown[activityNum, 1] = minutes;
+        activityCooldown[activityNum, 2] = seconds;
+
+        for (int i = 0; i < 3; i++)
+        {
+            //Duration Check
+            activateDuration[activityNum, 1] += (int) (Data.activityDuration[activityNum] * 60);
+            activateDuration[activityNum, 0] += activateDuration[activityNum, 1] / 60;
+            activateDuration[activityNum, 1] %= 60;
+
+            //Cooldown Check
+            activityCooldown[activityNum, 1] += (int)(Data.activityDuration[activityNum] * 60 
+                + Data.activityCooldown[activityNum] * 60);
+            activityCooldown[activityNum, 0] += activityCooldown[activityNum, 1] / 60;
+            activityCooldown[activityNum, 1] %= 60;
+        }
+        
     }
 }
