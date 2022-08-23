@@ -19,8 +19,9 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    public int quarantineday = 0;
+    
+    //Save
+    public int quarantineday = 1;
     public int exp = 0, level = 0;
     public int[] upgradeProgress = new int[6];
 
@@ -30,12 +31,23 @@ public class GameManager : MonoBehaviour
             upgradeProgress[i] = 0;
     }
 
-    public void DayEnd()
+    public void DayOver()
     {
-        SceneManager.LoadScene("Days");
+        SceneManager.LoadScene("DayOver");
     }
+
+    public void QuarantineIn()
+    {
+        SceneManager.LoadScene("House");
+    }
+
     public void QuarantineEnd()
     {
         SceneManager.LoadScene("End");
+    }
+    
+    public void GameEnd()
+    {
+
     }
 }

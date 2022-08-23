@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/House.unity
     guid: c7253f5d9a7295c4b906f7e6cbd0d1d3
+  - enabled: 1
+    path: Assets/Scenes/DayOver.unity
+    guid: fe8003e3073807d4e880aca2fef8ddad
+  - enabled: 1
+    path: Assets/Scenes/End.unity
+    guid: 20ff8c66694b419478fc5fa25ab5fc92
   m_configObjects: {}

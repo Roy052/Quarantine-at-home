@@ -18,8 +18,8 @@ public class HouseSM : MonoBehaviour
     public Button[] activateButtons, upgradeButtons;
     public Text[] upgradeTexts;
 
-    int hours = 10, minutes = 0, seconds = 0;
-    int quarantineday = 0;
+    int hours = 21, minutes = 59, seconds = 0;
+    int quarantineday = 1;
     float secondCheck = 0;
     AudioSource audioSource;
 
@@ -94,18 +94,27 @@ public class HouseSM : MonoBehaviour
             secondCheck = 0;
         }
 
-        if(hours >= 22)
+        if(quarantineday == 6 && hours >= 24)
         {
-            //Save
-            gm.exp = exp;
-            quarantineday++;
-            gm.quarantineday = quarantineday;
-            gm.level = level;
-            for (int i = 0; i < 6; i++)
-                gm.upgradeProgress[i] = upgradeProgress[i];
-
-            gm.DayEnd();
+            gm.QuarantineEnd();
         }
+        else
+        {
+            if (hours >= 22)
+            {
+                //Save
+                gm.exp = exp;
+                quarantineday++;
+                gm.quarantineday = quarantineday;
+                gm.level = level;
+                for (int i = 0; i < 6; i++)
+                    gm.upgradeProgress[i] = upgradeProgress[i];
+
+                gm.DayOver();
+            }
+
+        }
+            
 
         //Button Enable
         for(int i = 0; i < 6; i++)
