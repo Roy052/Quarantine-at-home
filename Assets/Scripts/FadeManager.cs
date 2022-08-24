@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FadeManager : MonoBehaviour
 {
@@ -37,5 +38,35 @@ public class FadeManager : MonoBehaviour
         }
     }
 
-    //public static IEnumerator FadeInText
+    public static IEnumerator FadeIn(Image image, float time)
+    {
+        float timeCheck = 0;
+        Color tempColor;
+        tempColor = image.color;
+        tempColor.a = 0;
+        image.color = tempColor;
+        while (timeCheck < time)
+        {
+            timeCheck += Time.deltaTime;
+            tempColor.a += Time.deltaTime / time;
+            image.color = tempColor;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public static IEnumerator FadeOut(Image image, float time)
+    {
+        float timeCheck = 0;
+        Color tempColor;
+        tempColor = image.color;
+        tempColor.a = 1;
+        image.color = tempColor;
+        while (timeCheck < time)
+        {
+            timeCheck += Time.deltaTime;
+            tempColor.a -= Time.deltaTime / time;
+            image.color = tempColor;
+            yield return new WaitForEndOfFrame();
+        }
+    }
 }

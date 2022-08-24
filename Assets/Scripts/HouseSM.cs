@@ -21,21 +21,26 @@ public class HouseSM : MonoBehaviour
     int hours = 21, minutes = 59, seconds = 0;
     int quarantineday = 1;
     float secondCheck = 0;
+    bool dayEnd = false;
     AudioSource audioSource;
 
     private void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        Debug.Log(gm.quarantineday);
         quarantineday = gm.quarantineday;
         exp = gm.exp;
         level = gm.level;
         for (int i = 0; i < 6; i++)
             upgradeProgress[i] = gm.upgradeProgress[i];
 
+
         timerText.text = "Day - " + quarantineday + ", " 
             + hours + ":" + minutes.ToString("D2") + ":" + seconds.ToString("D2") + "";
         expText.text = exp + "/" + Data.expGaps[level];
         expSlider.value = exp / Data.expGaps[level];
+
+        gm.LightOn(3);
 
         //Init
         for (int i = 0; i < 6; i++)
@@ -47,7 +52,6 @@ public class HouseSM : MonoBehaviour
                 activityCooldown[i, j] = 0;
             }
 
-            Debug.Log(i + ", " + upgradeProgress[i] + " : ");
             upgradeTexts[i].text = Data.upgradeValue[i, upgradeProgress[i]] + " to Upgrade";
         }
            
@@ -94,26 +98,32 @@ public class HouseSM : MonoBehaviour
             secondCheck = 0;
         }
 
-        if(quarantineday == 6 && hours >= 24)
+        if(dayEnd == false)
         {
-            gm.QuarantineEnd();
-        }
-        else
-        {
-            if (hours >= 22)
+            if (quarantineday == 7 && hours >= 24)
             {
-                //Save
-                gm.exp = exp;
-                quarantineday++;
-                gm.quarantineday = quarantineday;
-                gm.level = level;
-                for (int i = 0; i < 6; i++)
-                    gm.upgradeProgress[i] = upgradeProgress[i];
-
-                gm.DayOver();
+                dayEnd = true;
+                gm.QuarantineEnd();
             }
+            else
+            {
+                if (hours >= 22)
+                {
+                    Debug.Log("DayOver");
+                    //Save
+                    gm.exp = exp;
+                    quarantineday++;
+                    gm.quarantineday = quarantineday;
+                    gm.level = level;
+                    for (int i = 0; i < 6; i++)
+                        gm.upgradeProgress[i] = upgradeProgress[i];
+                    dayEnd = true;
 
+                    StartCoroutine(gm.DayOver(3));
+                }
+            }
         }
+        
             
 
         //Button Enable

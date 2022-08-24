@@ -44,3 +44,6 @@ TagManager:
   - name: UI
     uniqueID: 1939405653
     locked: 0
+  - name: SceneChanger
+    uniqueID: 274417619
+    locked: 0

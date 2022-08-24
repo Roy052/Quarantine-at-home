@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,24 +22,33 @@ public class GameManager : MonoBehaviour
     }
     
     //Save
-    public int quarantineday = 1;
-    public int exp = 0, level = 0;
+    public int quarantineday;
+    public int exp, level;
     public int[] upgradeProgress = new int[6];
+
+    public GameObject sceneMovementChanger;
 
     private void Start()
     {
+        //Init
+        quarantineday = 1;
+        exp = 0; level = 0;
         for (int i = 0; i < 6; i++)
             upgradeProgress[i] = 0;
     }
 
-    public void DayOver()
+    public IEnumerator DayOver(float seconds)
     {
+        StartCoroutine(LightOff(seconds));
+        yield return new WaitForSeconds(seconds);
         SceneManager.LoadScene("DayOver");
     }
 
-    public void QuarantineIn()
+    public IEnumerator QuarantineIn(float seconds)
     {
         SceneManager.LoadScene("House");
+        StartCoroutine(LightOn(seconds));
+        yield return new WaitForSeconds(seconds);
     }
 
     public void QuarantineEnd()
@@ -49,5 +59,22 @@ public class GameManager : MonoBehaviour
     public void GameEnd()
     {
 
+    }
+    public IEnumerator LightOn(float seconds)
+    {
+        sceneMovementChanger.GetComponent<Image>().color = Color.white;
+        sceneMovementChanger.SetActive(true);
+        StartCoroutine(FadeManager.FadeOut(sceneMovementChanger.GetComponent<Image>(), seconds));
+        yield return new WaitForSeconds(seconds+0.5f);
+        sceneMovementChanger.SetActive(false);
+    }
+
+    public IEnumerator LightOff(float seconds)
+    {
+        sceneMovementChanger.GetComponent<Image>().color = Color.black;
+        sceneMovementChanger.SetActive(true);
+        StartCoroutine(FadeManager.FadeIn(sceneMovementChanger.GetComponent<Image>(), seconds));
+        yield return new WaitForSeconds(seconds+0.5f);
+        sceneMovementChanger.SetActive(false);
     }
 }
