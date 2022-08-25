@@ -9,12 +9,16 @@ public class HouseSM : MonoBehaviour
 
     public Text timerText, musicText, expText, activityText;
     public Slider expSlider;
+
+    //Fix ¿¹Á¤
     int exp = 0, level = 0;
     int activityNum = -1;
     int[,] activateDuration = new int[6, 3];
     int[,] activityCooldown = new int[6, 3];
     bool[] activityEnabled = new bool[6];
     int[] upgradeProgress = new int[6];
+    public QuarantineData quarantineData;
+
     public Button[] activateButtons, upgradeButtons;
     public Text[] upgradeTexts;
 
@@ -27,12 +31,8 @@ public class HouseSM : MonoBehaviour
     private void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-        Debug.Log(gm.quarantineday);
-        quarantineday = gm.quarantineday;
-        exp = gm.exp;
-        level = gm.level;
-        for (int i = 0; i < 6; i++)
-            upgradeProgress[i] = gm.upgradeProgress[i];
+        Debug.Log(gm.quarantineData.quarantineday);
+        quarantineData = gm.quarantineData;
 
 
         timerText.text = "Day - " + quarantineday + ", " 
@@ -111,12 +111,7 @@ public class HouseSM : MonoBehaviour
                 {
                     Debug.Log("DayOver");
                     //Save
-                    gm.exp = exp;
-                    quarantineday++;
-                    gm.quarantineday = quarantineday;
-                    gm.level = level;
-                    for (int i = 0; i < 6; i++)
-                        gm.upgradeProgress[i] = upgradeProgress[i];
+                    gm.quarantineData = quarantineData;
                     dayEnd = true;
 
                     StartCoroutine(gm.DayOver(3));

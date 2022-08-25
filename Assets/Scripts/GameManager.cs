@@ -20,21 +20,19 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
     //Save
-    public int quarantineday;
-    public int exp, level;
-    public int[] upgradeProgress = new int[6];
+    public QuarantineData quarantineData = new QuarantineData();
 
     public GameObject sceneMovementChanger;
 
     private void Start()
     {
         //Init
-        quarantineday = 1;
-        exp = 0; level = 0;
+        quarantineData.quarantineday = 1;
+        quarantineData.exp = 0; quarantineData.level = 0;
         for (int i = 0; i < 6; i++)
-            upgradeProgress[i] = 0;
+            quarantineData.upgradeProgress[i] = 0;
     }
 
     public IEnumerator DayOver(float seconds)

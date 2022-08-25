@@ -15,7 +15,7 @@ public class DayOverSM : MonoBehaviour
     private void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-        day = gm.quarantineday;
+        day = gm.quarantineData.quarantineday;
         dayText.text = "Day - " + (day - 1);
         StartCoroutine(DayOverEffect());
     }
