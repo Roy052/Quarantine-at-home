@@ -13,8 +13,8 @@ public class HouseSM : MonoBehaviour
     //Fix ¿¹Á¤
     int exp = 0, level = 0;
     int activityNum = -1;
-    int[,] activateDuration = new int[6, 3];
-    int[,] activityCooldown = new int[6, 3];
+    int[] activateDuration = new int[6];
+    int[] activityCooldown = new int[6];
     bool[] activityEnabled = new bool[6];
     int[] upgradeProgress = new int[6];
     public QuarantineData quarantineData;
@@ -34,6 +34,8 @@ public class HouseSM : MonoBehaviour
         Debug.Log(gm.quarantineData.quarantineday);
         quarantineData = gm.quarantineData;
 
+        //Data Pull
+        PullData();
 
         timerText.text = "Day - " + quarantineday + ", " 
             + hours + ":" + minutes.ToString("D2") + ":" + seconds.ToString("D2") + "";
@@ -46,11 +48,8 @@ public class HouseSM : MonoBehaviour
         for (int i = 0; i < 6; i++)
         {
             activityEnabled[i] = true;
-            for(int j = 0; j < 3; j++)
-            {
-                activateDuration[i, j] = 0;
-                activityCooldown[i, j] = 0;
-            }
+            activateDuration[i] = 0;
+            activityCooldown[i] = 0;
 
             upgradeTexts[i].text = Data.upgradeValue[i, upgradeProgress[i]] + " to Upgrade";
         }
@@ -70,8 +69,7 @@ public class HouseSM : MonoBehaviour
                 TimeFlows(1);
 
                 //Acitity End
-                if(hours > activateDuration[activityNum,0] || 
-                    (hours == activateDuration[activityNum, 0] && minutes >= activateDuration[activityNum,1]))
+                if(activateDuration[activityNum] >= (hours * 3600 + minutes * 60 + seconds))
                 {
                     activityNum = -1;
                 }
@@ -81,8 +79,7 @@ public class HouseSM : MonoBehaviour
                 {
                     if(activityEnabled[i] == false)
                     {
-                        if (hours > activityCooldown[i, 0] ||
-                    (hours == activityCooldown[i, 0] && minutes >= activityCooldown[i, 1]))
+                        if (activityCooldown[i] >= (hours * 3600 + minutes * 60 + seconds))
                         {
                             activityEnabled[i] = true;
                         }
@@ -103,15 +100,18 @@ public class HouseSM : MonoBehaviour
             if (quarantineday == 7 && hours >= 24)
             {
                 dayEnd = true;
+                gm.AutoSave(new QuarantineData());
                 gm.QuarantineEnd();
             }
             else
             {
                 if (hours >= 22)
                 {
-                    Debug.Log("DayOver");
                     //Save
+                    PushData();
+                    quarantineData.quarantineday++;
                     gm.quarantineData = quarantineData;
+                    gm.AutoSave(quarantineData);
                     dayEnd = true;
 
                     StartCoroutine(gm.DayOver(3));
@@ -208,27 +208,90 @@ public class HouseSM : MonoBehaviour
 
     public void AddDurationCooldown(int activityNum)
     {
-        activateDuration[activityNum, 0] = hours;
-        activateDuration[activityNum, 1] = minutes;
-        activateDuration[activityNum, 2] = seconds;
-
-        activityCooldown[activityNum, 0] = hours;
-        activityCooldown[activityNum, 1] = minutes;
-        activityCooldown[activityNum, 2] = seconds;
+        activateDuration[activityNum] = hours * 3600 + minutes * 60 + seconds;
+        activityCooldown[activityNum] = hours * 3600 + minutes * 60 + seconds;
 
         for (int i = 0; i < 3; i++)
         {
             //Duration Check
-            activateDuration[activityNum, 1] += (int) (Data.activityDuration[activityNum] * 60);
-            activateDuration[activityNum, 0] += activateDuration[activityNum, 1] / 60;
-            activateDuration[activityNum, 1] %= 60;
+            activateDuration[activityNum] += (int) (Data.activityDuration[activityNum] * 3600);
 
             //Cooldown Check
-            activityCooldown[activityNum, 1] += (int)(Data.activityDuration[activityNum] * 60 
-                + Data.activityCooldown[activityNum] * 60);
-            activityCooldown[activityNum, 0] += activityCooldown[activityNum, 1] / 60;
-            activityCooldown[activityNum, 1] %= 60;
+            activityCooldown[activityNum] += (int)(Data.activityDuration[activityNum] * 3600 
+                + Data.activityCooldown[activityNum] * 3600);
         }
         
+    }
+
+    public void PullData()
+    {
+        //Progress
+        quarantineday = quarantineData.quarantineday;
+        exp = quarantineData.exp;
+        level = quarantineData.level;
+        upgradeProgress = quarantineData.upgradeProgress;
+
+        //Time
+        hours = quarantineData.hours;
+        minutes = quarantineData.minutes;
+        seconds = quarantineData.seconds;
+
+        //Activity
+        activateDuration = quarantineData.activateDuration;
+        activityCooldown = quarantineData.activityCooldown;
+        activityEnabled = quarantineData.activityEnabled;
+
+        //ActivityNum
+        activityNum = -1;
+        for(int i = 0; i < 6; i++)
+        {
+            if(activateDuration[i] != 0 && activateDuration[i] < (hours * 3600 + minutes * 60 + seconds))
+            {
+                activityNum = i;
+                break;
+            }
+        }
+    }
+
+    public void PushData()
+    {
+        //Progress
+        quarantineData.quarantineday = quarantineday;
+        quarantineData.exp = exp;
+        quarantineData.level = level;
+        quarantineData.upgradeProgress = upgradeProgress;
+
+        
+        if(hours >= 22)
+        {
+            //Time
+            quarantineData.hours = 21;
+            quarantineData.minutes = 59;
+            quarantineData.seconds = 0;
+
+            //Activity
+            quarantineData.activateDuration = new int[6] { 0, 0, 0, 0, 0, 0 };
+            quarantineData.activityCooldown = new int[6] { 0, 0, 0, 0, 0, 0 };
+            quarantineData.activityEnabled = new bool[6] { true, true, true, true, true, true };
+        }
+        else
+        {
+            //Time
+            quarantineData.hours = hours;
+            quarantineData.minutes = minutes;
+            quarantineData.seconds = seconds;
+
+            //Activity
+            quarantineData.activateDuration = activateDuration;
+            quarantineData.activityCooldown = activityCooldown;
+            quarantineData.activityEnabled = activityEnabled;
+        }
+    }
+
+    public void ToMenu()
+    {
+        PushData();
+        gm.quarantineData = quarantineData;
+        gm.ToMenu();
     }
 }

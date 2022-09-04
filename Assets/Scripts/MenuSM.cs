@@ -10,11 +10,16 @@ public class MenuSM : MonoBehaviour
     QuarantineData quarantineData;
     void Start()
     {
+        gameContinue.gameObject.SetActive(false);
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         quarantineData = SaveDataScript.LoadFromJson();
-        if (quarantineData.quarantineday != -1)
+        if (quarantineData != null)
+        {
+
             gameContinue.gameObject.SetActive(true);
+        }
+            
     }
 
     public void GameStart()
@@ -24,6 +29,7 @@ public class MenuSM : MonoBehaviour
 
     public void GameContinue()
     {
+        Debug.Log(quarantineData.exp);
         gm.quarantineData = quarantineData;
         StartCoroutine(gm.QuarantineIn(3));
     }

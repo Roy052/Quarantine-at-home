@@ -22,17 +22,14 @@ public class GameManager : MonoBehaviour
     }
 
     //Save
+    //[HideInInspector]
     public QuarantineData quarantineData = new QuarantineData();
 
     public GameObject sceneMovementChanger;
 
     private void Start()
     {
-        //Init
-        quarantineData.quarantineday = 1;
-        quarantineData.exp = 0; quarantineData.level = 0;
-        for (int i = 0; i < 6; i++)
-            quarantineData.upgradeProgress[i] = 0;
+        sceneMovementChanger.SetActive(false);
     }
 
     public IEnumerator DayOver(float seconds)
@@ -58,6 +55,17 @@ public class GameManager : MonoBehaviour
     {
 
     }
+
+    public void ToMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+
+    public void GameQuit()
+    {
+        SaveDataScript.SaveIntoJson(quarantineData);
+        Application.Quit();
+    }
     public IEnumerator LightOn(float seconds)
     {
         sceneMovementChanger.GetComponent<Image>().color = Color.white;
@@ -74,5 +82,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(FadeManager.FadeIn(sceneMovementChanger.GetComponent<Image>(), seconds));
         yield return new WaitForSeconds(seconds+0.5f);
         sceneMovementChanger.SetActive(false);
+    }
+
+    public void AutoSave(QuarantineData saveQuarantineData)
+    {
+        SaveDataScript.SaveIntoJson(saveQuarantineData);
     }
 }
