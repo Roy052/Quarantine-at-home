@@ -7,10 +7,10 @@ public class HouseSM : MonoBehaviour
 {
     GameManager gm;
 
-    public Text timerText, musicText, expText, activityText;
+    public Text timerText, musicText, expText, activityText, levelText;
     public Slider expSlider;
+    public Button levelupButton;
 
-    //Fix ¿¹Á¤
     int exp = 0, level = 0;
     int activityNum = -1;
     int[] activateDuration = new int[6];
@@ -22,11 +22,18 @@ public class HouseSM : MonoBehaviour
     public Button[] activateButtons, upgradeButtons;
     public Text[] upgradeTexts;
 
-    int hours = 21, minutes = 59, seconds = 0;
+    int hours = 18, minutes = 59, seconds = 40;
     int quarantineday = 1;
     float secondCheck = 0;
     bool dayEnd = false;
     AudioSource audioSource;
+
+    public GameObject windowImage;
+    bool sunset = false, twilight = false;
+    Color tempColor,
+        basicColor = new Color(1, 1, 1, 1),
+        sunsetColor = new Color(202/(float)255, 133/ (float)255, 60/ (float)255, 1),
+        twilightColor = new Color(63/(float)255, 63 / (float)255, 63 / (float)255, 1);
 
     private void Start()
     {
@@ -41,6 +48,7 @@ public class HouseSM : MonoBehaviour
             + hours + ":" + minutes.ToString("D2") + ":" + seconds.ToString("D2") + "";
         expText.text = exp + "/" + Data.expGaps[level];
         expSlider.value = exp / Data.expGaps[level];
+        levelText.text = level + "";
 
         gm.LightOn(3);
 
@@ -69,8 +77,9 @@ public class HouseSM : MonoBehaviour
                 TimeFlows(1);
 
                 //Acitity End
-                if(activateDuration[activityNum] >= (hours * 3600 + minutes * 60 + seconds))
+                if(activateDuration[activityNum] <= (hours * 3600 + minutes * 60 + seconds))
                 {
+                    Debug.Log("Activity Finished");
                     activityNum = -1;
                 }
 
@@ -92,6 +101,35 @@ public class HouseSM : MonoBehaviour
                 TimeFlows(1);
             }
 
+            //Sunset
+            if (sunset)
+            {
+                //0.5 hour
+                tempColor = basicColor - (basicColor - sunsetColor) * ((minutes * 60 + seconds) / (float)1800) ;
+                windowImage.GetComponent<SpriteRenderer>().color = tempColor;
+                if (hours == 19 && minutes == 30 && seconds == 0)
+                {
+                    twilight = true;
+                    sunset = false;
+                }
+
+            }
+            else if (hours == 19 && minutes == 0 && seconds >= 0)
+            {
+                sunset = true;
+                tempColor = windowImage.GetComponent<SpriteRenderer>().color;
+            }
+
+            // 1.5 hour
+            if (twilight)
+            {
+                tempColor = sunsetColor - (sunsetColor - twilightColor) * ((minutes * 60 + seconds) /(float) 5400);
+                windowImage.GetComponent<SpriteRenderer>().color = tempColor;
+                if (hours == 21)
+                    twilight = false;
+            }
+
+            //Init
             secondCheck = 0;
         }
 
@@ -117,9 +155,7 @@ public class HouseSM : MonoBehaviour
                     StartCoroutine(gm.DayOver(3));
                 }
             }
-        }
-        
-            
+        }    
 
         //Button Enable
         for(int i = 0; i < 6; i++)
@@ -147,6 +183,9 @@ public class HouseSM : MonoBehaviour
             else
                 upgradeButtons[i].enabled = false;
         }
+
+        if (exp == Data.expGaps[level]) levelupButton.enabled = true;
+        else levelupButton.enabled = false;
     }
     public void Clicked()
     {
@@ -164,6 +203,7 @@ public class HouseSM : MonoBehaviour
 
     public void ActivityON(int num)
     {
+        Debug.Log("Activity ON" + num);
         activityNum = num;
         activityText.text = Data.activityName[num];
         AddDurationCooldown(num);
@@ -196,13 +236,9 @@ public class HouseSM : MonoBehaviour
     
     public void GainExp(int ammount)
     {
-        exp += ammount;
+        if(exp < Data.expGaps[level])
+            exp += ammount;
         expSlider.value = exp / (float) Data.expGaps[level];
-        if(exp >= Data.expGaps[level])
-        {
-            level++;
-            exp = 0;
-        }
         expText.text = exp + "/" + Data.expGaps[level];
     }
 
@@ -286,6 +322,15 @@ public class HouseSM : MonoBehaviour
             quarantineData.activityCooldown = activityCooldown;
             quarantineData.activityEnabled = activityEnabled;
         }
+    }
+
+    public void LevelUP()
+    {
+        level++;
+        exp = 0;
+        expSlider.value = exp / (float)Data.expGaps[level];
+        expText.text = exp + "/" + Data.expGaps[level];
+        levelText.text = level + "";
     }
 
     public void ToMenu()

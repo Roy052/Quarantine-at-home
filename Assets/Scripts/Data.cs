@@ -12,7 +12,7 @@ public class Data
     readonly public static string[] cardEffectList = { "One click treated as double click." };
 
     //gap
-    readonly public static int[] expGaps = { 500, 1000, 1500, 2000, 2500, 3000 };
+    readonly public static int[] expGaps = { 100, 200, 500, 1000, 1500, 3000, 5000 };
 
     //Activity
     readonly public static string[] activityName = { "Watching Videos", "Playing Games", "Cleaning", "", "", "" };

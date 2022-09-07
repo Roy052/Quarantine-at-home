@@ -679,7 +679,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 24707910017821759, guid: 5ec1b34d1c866294680dfaa1450ae378, type: 3}
       propertyPath: quarantineData.hours
-      value: 21
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 24707910017821759, guid: 5ec1b34d1c866294680dfaa1450ae378, type: 3}
       propertyPath: quarantineData.minutes
