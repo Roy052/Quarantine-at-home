@@ -7,26 +7,29 @@ public class HouseSM : MonoBehaviour
 {
     GameManager gm;
 
+    //UI
     public Text timerText, musicText, expText, activityText, levelText;
     public Slider expSlider;
     public Button levelupButton;
 
+    public Button[] activateButtons, upgradeButtons;
+    public Text[] activateTexts ,upgradeTexts;
+    public Text[] activityTimeflowTexts, activityClickTexts, activityDurationTexts, activityCooltimeTexts;
+    AudioSource audioSource;
+
     int exp = 0, level = 0;
-    int activityNum = -1;
+    public int activityNum = -1;
     int[] activateDuration = new int[6];
     int[] activityCooldown = new int[6];
-    bool[] activityEnabled = new bool[6];
+    public bool[] activityEnabled = new bool[6];
     int[] upgradeProgress = new int[6];
     public QuarantineData quarantineData;
-
-    public Button[] activateButtons, upgradeButtons;
-    public Text[] upgradeTexts;
 
     int hours = 18, minutes = 59, seconds = 40;
     int quarantineday = 1;
     float secondCheck = 0;
     bool dayEnd = false;
-    AudioSource audioSource;
+    
 
     public GameObject windowImage;
     bool sunset = false, twilight = false;
@@ -55,9 +58,10 @@ public class HouseSM : MonoBehaviour
         //Init
         for (int i = 0; i < 6; i++)
         {
-            activityEnabled[i] = true;
-            activateDuration[i] = 0;
-            activityCooldown[i] = 0;
+            activityTimeflowTexts[i].text = Data.activityTimeValue[i, upgradeProgress[i]] + "X";
+            activityClickTexts[i].text = Data.activityClickValue[i, upgradeProgress[i]] + " sec";
+            activityDurationTexts[i].text = Data.activityDuration[i, upgradeProgress[i]] + "H";
+            activityCooltimeTexts[i].text = Data.activityCooldown[i, upgradeProgress[i]] + "H";
 
             upgradeTexts[i].text = Data.upgradeValue[i, upgradeProgress[i]] + " to Upgrade";
         }
@@ -70,7 +74,7 @@ public class HouseSM : MonoBehaviour
         secondCheck += Time.deltaTime;
         
         //Seconds Flow
-        if((activityNum != -1 && secondCheck >= 1.0 / Data.activityTimeValue[activityNum]) || secondCheck >= 1)
+        if((activityNum != -1 && secondCheck >= 1.0 / Data.activityTimeValue[activityNum, upgradeProgress[activityNum]]) || secondCheck >= 1)
         {
             if (activityNum != -1)
             {
@@ -80,6 +84,7 @@ public class HouseSM : MonoBehaviour
                 if(activateDuration[activityNum] <= (hours * 3600 + minutes * 60 + seconds))
                 {
                     Debug.Log("Activity Finished");
+                    activityEnabled[activityNum] = false;
                     activityNum = -1;
                 }
 
@@ -88,13 +93,12 @@ public class HouseSM : MonoBehaviour
                 {
                     if(activityEnabled[i] == false)
                     {
-                        if (activityCooldown[i] >= (hours * 3600 + minutes * 60 + seconds))
+                        if (activityCooldown[i] != 0 && activityCooldown[i] <= (hours * 3600 + minutes * 60 + seconds))
                         {
                             activityEnabled[i] = true;
                         }
                     }
                 }
-                
             }
             else
             {
@@ -160,28 +164,29 @@ public class HouseSM : MonoBehaviour
         //Button Enable
         for(int i = 0; i < 6; i++)
         {
-            if(activityNum != -1)
+            if (activityEnabled[i])
             {
-                activateButtons[i].enabled = false;
+                activateButtons[i].enabled = true;
+                activateButtons[i].GetComponent<Image>().color = Color.white;
             }
             else
             {
-                if (activityEnabled[i])
-                {
-                    activateButtons[i].enabled = true;
-                    activateButtons[i].GetComponent<Image>().color = Color.white;
-                }
-                else
-                {
-                    activateButtons[i].enabled = false;
-                    activateButtons[i].GetComponent<Image>().color = Color.gray;
-                }
+                activateButtons[i].enabled = false;
+                activateButtons[i].GetComponent<Image>().color = Color.gray;
             }
 
             if (exp >= Data.upgradeValue[i, upgradeProgress[i]])
+            {
                 upgradeButtons[i].enabled = true;
+                upgradeButtons[i].GetComponent<Image>().color = Color.white;
+            }
+
             else
+            {
                 upgradeButtons[i].enabled = false;
+                upgradeButtons[i].GetComponent<Image>().color = Color.gray;
+            }
+                
         }
 
         if (exp == Data.expGaps[level]) levelupButton.enabled = true;
@@ -195,7 +200,7 @@ public class HouseSM : MonoBehaviour
         }
         else
         {
-            TimeFlows(Data.activityClickValue[activityNum]);
+            TimeFlows(Data.activityClickValue[activityNum, upgradeProgress[activityNum]]);
         }
         
         GainExp(1);
@@ -204,10 +209,41 @@ public class HouseSM : MonoBehaviour
     public void ActivityON(int num)
     {
         Debug.Log("Activity ON" + num);
-        activityNum = num;
-        activityText.text = Data.activityName[num];
-        AddDurationCooldown(num);
+        if(activityNum != -1)
+        {
+            
+            //Cooldown Recalculate
+            activityCooldown[activityNum] -= activateDuration[activityNum] - (hours * 3600 + minutes * 60 + seconds);
+            
+            activateDuration[activityNum] = 0;
+            
+            if (activityNum == num)
+            {
+                activityNum = -1;
+                activityText.text = "";
+                activateTexts[num].text = "Activate";
+                activityEnabled[num] = false;
+            }
+            else
+            {
+                //past
+                activateTexts[activityNum].text = "Activate";
+                activityEnabled[activityNum] = false;
 
+                activityNum = num;
+                activityText.text = Data.activityName[num];
+                AddDurationCooldown(num);
+                activateTexts[num].text = "Stop";
+            }
+        }
+        else
+        {
+            activityNum = num;
+            activityText.text = Data.activityName[num];
+            AddDurationCooldown(num);
+            activateTexts[num].text = "Stop";
+        }
+        
     }
 
     public void UpgradeON(int num)
@@ -215,6 +251,10 @@ public class HouseSM : MonoBehaviour
         GainExp(-Data.upgradeValue[num, upgradeProgress[num]]);
         upgradeProgress[num]++;
         upgradeTexts[num].text = Data.upgradeValue[num, upgradeProgress[num]] + " to Upgrade";
+        activityTimeflowTexts[num].text = Data.activityTimeValue[num, upgradeProgress[num]] + "X";
+        activityClickTexts[num].text = Data.activityClickValue[num, upgradeProgress[num]] + " sec";
+        activityDurationTexts[num].text = Data.activityDuration[num, upgradeProgress[num]] + "H";
+        activityCooltimeTexts[num].text = Data.activityCooldown[num, upgradeProgress[num]] + "H";
     }
 
     public void TimeFlows(int ammount)
@@ -250,11 +290,11 @@ public class HouseSM : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             //Duration Check
-            activateDuration[activityNum] += (int) (Data.activityDuration[activityNum] * 3600);
+            activateDuration[activityNum] += (int) (Data.activityDuration[activityNum, upgradeProgress[activityNum]] * 3600);
 
             //Cooldown Check
-            activityCooldown[activityNum] += (int)(Data.activityDuration[activityNum] * 3600 
-                + Data.activityCooldown[activityNum] * 3600);
+            activityCooldown[activityNum] += (int)(Data.activityDuration[activityNum, upgradeProgress[activityNum]] * 3600 
+                + Data.activityCooldown[activityNum, upgradeProgress[activityNum]] * 3600);
         }
         
     }

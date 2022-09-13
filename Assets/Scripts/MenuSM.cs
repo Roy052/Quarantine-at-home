@@ -6,19 +6,20 @@ using UnityEngine.UI;
 public class MenuSM : MonoBehaviour
 {
     public Button gameStart, gameContinue, quit;
+    public Text gameContinueText;
     GameManager gm;
     QuarantineData quarantineData;
     void Start()
     {
-        gameContinue.gameObject.SetActive(false);
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         quarantineData = SaveDataScript.LoadFromJson();
-        if (quarantineData != null)
+        if (quarantineData == null)
         {
-
-            gameContinue.gameObject.SetActive(true);
+            gameContinue.enabled = false;
+            gameContinueText.color = Color.gray;
         }
+
             
     }
 
