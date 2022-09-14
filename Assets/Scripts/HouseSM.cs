@@ -20,7 +20,7 @@ public class HouseSM : MonoBehaviour
     int exp = 0, level = 0;
     public int activityNum = -1;
     int[] activateDuration = new int[6];
-    int[] activityCooldown = new int[6];
+    public int[] activityCooldown = new int[6];
     public bool[] activityEnabled = new bool[6];
     int[] upgradeProgress = new int[6];
     public QuarantineData quarantineData;
@@ -38,6 +38,7 @@ public class HouseSM : MonoBehaviour
         sunsetColor = new Color(202/(float)255, 133/ (float)255, 60/ (float)255, 1),
         twilightColor = new Color(63/(float)255, 63 / (float)255, 63 / (float)255, 1);
 
+    public Text timer;
     private void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -70,7 +71,7 @@ public class HouseSM : MonoBehaviour
     }
     private void Update()
     {
-        
+        timer.text = (hours * 3600 + minutes * 60 + seconds) + "";
         secondCheck += Time.deltaTime;
         
         //Seconds Flow
@@ -85,24 +86,27 @@ public class HouseSM : MonoBehaviour
                 {
                     Debug.Log("Activity Finished");
                     activityEnabled[activityNum] = false;
+                    activateTexts[activityNum].text = "Activate";
                     activityNum = -1;
                 }
 
-                //Cooldown End
-                for(int i = 0; i < 6; i++)
-                {
-                    if(activityEnabled[i] == false)
-                    {
-                        if (activityCooldown[i] != 0 && activityCooldown[i] <= (hours * 3600 + minutes * 60 + seconds))
-                        {
-                            activityEnabled[i] = true;
-                        }
-                    }
-                }
             }
             else
             {
                 TimeFlows(1);
+            }
+
+
+            //Cooldown End
+            for (int i = 0; i < 6; i++)
+            {
+                if (activityEnabled[i] == false)
+                {
+                    if (activityCooldown[i] <= (hours * 3600 + minutes * 60 + seconds))
+                    {
+                        activityEnabled[i] = true;
+                    }
+                }
             }
 
             //Sunset
@@ -276,8 +280,11 @@ public class HouseSM : MonoBehaviour
     
     public void GainExp(int ammount)
     {
-        if(exp < Data.expGaps[level])
+        if (exp + ammount <= Data.expGaps[level])
             exp += ammount;
+        else
+            exp = Data.expGaps[level];
+
         expSlider.value = exp / (float) Data.expGaps[level];
         expText.text = exp + "/" + Data.expGaps[level];
     }
@@ -285,18 +292,12 @@ public class HouseSM : MonoBehaviour
     public void AddDurationCooldown(int activityNum)
     {
         activateDuration[activityNum] = hours * 3600 + minutes * 60 + seconds;
-        activityCooldown[activityNum] = hours * 3600 + minutes * 60 + seconds;
+        //Duration Check
+        activateDuration[activityNum] += (int) (Data.activityDuration[activityNum, upgradeProgress[activityNum]] * 3600);
 
-        for (int i = 0; i < 3; i++)
-        {
-            //Duration Check
-            activateDuration[activityNum] += (int) (Data.activityDuration[activityNum, upgradeProgress[activityNum]] * 3600);
-
-            //Cooldown Check
-            activityCooldown[activityNum] += (int)(Data.activityDuration[activityNum, upgradeProgress[activityNum]] * 3600 
-                + Data.activityCooldown[activityNum, upgradeProgress[activityNum]] * 3600);
-        }
-        
+        //Cooldown Check
+        activityCooldown[activityNum] = activateDuration[activityNum]
+                + (int) (Data.activityCooldown[activityNum, upgradeProgress[activityNum]] * 3600);
     }
 
     public void PullData()
