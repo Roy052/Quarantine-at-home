@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -27,10 +28,30 @@ public class GameManager : MonoBehaviour
 
     public GameObject sceneMovementChanger;
 
+    public AudioSource mainBGMLoader, sideBGMLoader;
+    public List<AudioClip> mainBGMList = new List<AudioClip>();
+    public List<AudioClip>[] sideBGMList = new List<AudioClip>[6];
+
     private void Start()
     {
         sceneMovementChanger.SetActive(false);
+
+        //BGMLoad
+
+        //Main
+        mainBGMList.AddRange( Resources.LoadAll<AudioClip>("Music/Main/"));
+
+        string debugText = "";
+        for (int i = 0; i < 1; i++)
+        {
+            sideBGMList[i] = new List<AudioClip>();
+            sideBGMList[i].AddRange(Resources.LoadAll<AudioClip>("Music/Side/" + i + "/"));
+            debugText += i + " : " + sideBGMList[i].Count + ", ";
+        }
+        Debug.Log(debugText);
+            
     }
+
 
     public IEnumerator DayOver(float seconds)
     {
@@ -66,6 +87,7 @@ public class GameManager : MonoBehaviour
         SaveDataScript.SaveIntoJson(quarantineData);
         Application.Quit();
     }
+
     public IEnumerator LightOn(float seconds)
     {
         sceneMovementChanger.GetComponent<Image>().color = Color.white;

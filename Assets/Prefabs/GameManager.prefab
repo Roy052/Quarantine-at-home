@@ -45,10 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9ff1cd02d14fa8499eb4fb4de316ebe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quarantineday: 0
-  exp: 0
-  level: 0
-  upgradeProgress: 000000000000000000000000000000000000000000000000
+  quarantineData:
+    quarantineday: 0
+    exp: 0
+    level: 0
+    upgradeProgress: 000000000000000000000000000000000000000000000000
+    hours: 10
+    minutes: 0
+    seconds: 0
+    activateDuration: 000000000000000000000000000000000000000000000000
+    activityCooldown: 000000000000000000000000000000000000000000000000
+    activityEnabled: 010101010101
   sceneMovementChanger: {fileID: 1063625185323109948}
 --- !u!1 &1063625185323109948
 GameObject:

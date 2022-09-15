@@ -12,7 +12,7 @@ public class MenuSM : MonoBehaviour
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-
+        StartCoroutine( gm.LightOn(3));
         quarantineData = SaveDataScript.LoadFromJson();
         if (quarantineData == null)
         {

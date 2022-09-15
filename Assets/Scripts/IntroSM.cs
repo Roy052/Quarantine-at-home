@@ -7,6 +7,7 @@ public class IntroSM : MonoBehaviour
 {
     public Image part1, part2;
     public List<Sprite> introSpriteList;
+    public GameManager gm;
     void Start()
     {
         StartCoroutine(IntroMovie());
@@ -20,19 +21,25 @@ public class IntroSM : MonoBehaviour
             if (i % 2 == 0)
             {
                 part1.sprite = introSpriteList[i];
-                FadeManager.FadeIn(part1, 1);
+                StartCoroutine( FadeManager.FadeIn(part1, 1));
                 yield return new WaitForSeconds(1);
             }
             else
             {
                 part2.sprite = introSpriteList[i];
-                FadeManager.FadeIn(part2, 1);
-                yield return new WaitForSeconds(1);
+                StartCoroutine(FadeManager.FadeIn(part2, 1));
+                yield return new WaitForSeconds(2);
 
-                FadeManager.FadeOut(part1, 1);
-                FadeManager.FadeOut(part2, 1);
+                StartCoroutine(FadeManager.FadeOut(part1, 1));
+                StartCoroutine(FadeManager.FadeOut(part2, 1));
                 yield return new WaitForSeconds(1);
             }
         }
+
+        gm.ToMenu();
+    }
+    private void OnMouseDown()
+    {
+        gm.ToMenu();
     }
 }

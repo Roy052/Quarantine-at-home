@@ -48,15 +48,14 @@ public class HouseSM : MonoBehaviour
         //Data Pull
         PullData();
 
+        //Init Text
         timerText.text = "Day - " + quarantineday + ", " 
             + hours + ":" + minutes.ToString("D2") + ":" + seconds.ToString("D2") + "";
         expText.text = exp + "/" + Data.expGaps[level];
         expSlider.value = exp / Data.expGaps[level];
         levelText.text = level + "";
 
-        gm.LightOn(3);
-
-        //Init
+        
         for (int i = 0; i < 6; i++)
         {
             activityTimeflowTexts[i].text = Data.activityTimeValue[i, upgradeProgress[i]] + "X";
