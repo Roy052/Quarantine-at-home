@@ -62,7 +62,41 @@ public class SaveDataScript : MonoBehaviour
         }
         return default;
     }
+
+    static public void DeleteSave()
+    {
+        try
+        {
+            string path = "./Assets/Save/SaveData.json";
+            Debug.Log(path);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+                SaveDataScript.RefreshEditor();
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            Debug.Log("The file was not found:" + e.Message);
+        }
+        catch (DirectoryNotFoundException e)
+        {
+            Debug.Log("The directory was not found: " + e.Message);
+        }
+        catch (IOException e)
+        {
+            Debug.Log("The file could not be opened:" + e.Message);
+        }
+    }
+    static public void RefreshEditor()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.AssetDatabase.Refresh();
+        #endif
+    }
 }
+
+
 
 [System.Serializable]
 public class QuarantineData

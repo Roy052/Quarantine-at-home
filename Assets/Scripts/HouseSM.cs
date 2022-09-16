@@ -145,7 +145,7 @@ public class HouseSM : MonoBehaviour
             if (quarantineday == 7 && hours >= 24)
             {
                 dayEnd = true;
-                gm.AutoSave(new QuarantineData());
+                SaveDataScript.DeleteSave();
                 gm.QuarantineEnd();
             }
             else
