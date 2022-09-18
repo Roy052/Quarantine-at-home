@@ -8,13 +8,17 @@ public class IntroSM : MonoBehaviour
     public Image part1, part2;
     public List<Sprite> introSpriteList;
     public GameManager gm;
+    public AudioClip introBGM;
     void Start()
     {
         StartCoroutine(IntroMovie());
+        
     }
 
     IEnumerator IntroMovie()
     {
+        gm.mainBGMLoader.clip = introBGM;
+        gm.mainBGMLoader.Play();
         yield return new WaitForSeconds(1);
         for(int i = 0; i < introSpriteList.Count; i++)
         {
@@ -35,11 +39,12 @@ public class IntroSM : MonoBehaviour
                 yield return new WaitForSeconds(1);
             }
         }
-
+        gm.mainBGMLoader.Stop();
         gm.ToMenu();
     }
     private void OnMouseDown()
     {
+        gm.mainBGMLoader.Stop();
         gm.ToMenu();
     }
 }

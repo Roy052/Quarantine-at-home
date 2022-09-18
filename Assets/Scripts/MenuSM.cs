@@ -9,9 +9,13 @@ public class MenuSM : MonoBehaviour
     public Text gameContinueText;
     GameManager gm;
     QuarantineData quarantineData;
+
+    //BGM
+    public AudioClip menuBGM;
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gm.mainBGMLoader.clip = menuBGM;
         StartCoroutine( gm.LightOn(3));
         quarantineData = SaveDataScript.LoadFromJson();
         if (quarantineData == null)
@@ -25,12 +29,13 @@ public class MenuSM : MonoBehaviour
 
     public void GameStart()
     {
+        gm.mainBGMLoader.Stop();
         StartCoroutine(gm.QuarantineIn(3));
     }
 
     public void GameContinue()
     {
-        Debug.Log(quarantineData.exp);
+        gm.mainBGMLoader.Stop();
         gm.quarantineData = quarantineData;
         StartCoroutine(gm.QuarantineIn(3));
     }

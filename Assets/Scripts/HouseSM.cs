@@ -17,6 +17,7 @@ public class HouseSM : MonoBehaviour
     public Text[] activityTimeflowTexts, activityClickTexts, activityDurationTexts, activityCooltimeTexts;
     AudioSource audioSource;
 
+    //QuarantineData
     int exp = 0, level = 0;
     public int activityNum = -1;
     int[] activateDuration = new int[6];
@@ -25,12 +26,13 @@ public class HouseSM : MonoBehaviour
     int[] upgradeProgress = new int[6];
     public QuarantineData quarantineData;
 
+    //time check
     int hours = 18, minutes = 59, seconds = 40;
     int quarantineday = 1;
     float secondCheck = 0;
     bool dayEnd = false;
     
-
+    //Sunset and Twilight
     public GameObject windowImage;
     bool sunset = false, twilight = false;
     Color tempColor,
@@ -39,6 +41,11 @@ public class HouseSM : MonoBehaviour
         twilightColor = new Color(63/(float)255, 63 / (float)255, 63 / (float)255, 1);
 
     public Text timer;
+
+    //PauseMenu
+    public PauseMenuManager pauseMenuManager;
+    bool pauseMenuON = false;
+    
     private void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -65,7 +72,8 @@ public class HouseSM : MonoBehaviour
 
             upgradeTexts[i].text = Data.upgradeValue[i, upgradeProgress[i]] + " to Upgrade";
         }
-           
+
+        pauseMenuManager.PauseOFF();
         
     }
     private void Update()
@@ -194,6 +202,13 @@ public class HouseSM : MonoBehaviour
 
         if (exp == Data.expGaps[level]) levelupButton.enabled = true;
         else levelupButton.enabled = false;
+
+        //PauseMenuInput
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseMenuONandOFF();
+        }
+           
     }
     public void Clicked()
     {
@@ -378,5 +393,18 @@ public class HouseSM : MonoBehaviour
         PushData();
         gm.quarantineData = quarantineData;
         gm.ToMenu();
+    }
+
+    public void PauseMenuONandOFF()
+    {
+        if (pauseMenuON)
+            pauseMenuManager.PauseOFF();
+        else
+        {
+            PushData();
+            pauseMenuManager.PauseON(quarantineData);
+        }
+
+        pauseMenuON = !pauseMenuON;
     }
 }
