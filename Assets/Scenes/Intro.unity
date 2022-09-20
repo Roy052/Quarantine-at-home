@@ -505,17 +505,18 @@ MonoBehaviour:
   part1: {fileID: 58486285}
   part2: {fileID: 523842039}
   introSpriteList:
-  - {fileID: 21300000, guid: 682b36d8174ff3644954428f292e5668, type: 3}
-  - {fileID: 21300000, guid: 682d4bed2ed55e144ba295504b58e702, type: 3}
-  - {fileID: 21300000, guid: 79d57ed4497e9c946b64966bef2f148f, type: 3}
-  - {fileID: 21300000, guid: e4ae1a16c013600419b9684a7d97b0b4, type: 3}
-  - {fileID: 21300000, guid: 990e62d1e90cdfb44870811f5db4b1cc, type: 3}
-  - {fileID: 21300000, guid: 5b8351922d4fd2745bbdc687f764883c, type: 3}
-  - {fileID: 21300000, guid: 399aee26abba7754db713fdab653880a, type: 3}
-  - {fileID: 21300000, guid: 9b57f77e883696147884c836d24ff1c9, type: 3}
-  - {fileID: 21300000, guid: 4415feab206aae142a7e5a0b75d3e51d, type: 3}
-  - {fileID: 21300000, guid: b461b0d829b5b3e42b3b6ff6f7a8bc77, type: 3}
+  - {fileID: 21300000, guid: f06915b4ff684724b80e67d183297f0c, type: 3}
+  - {fileID: 21300000, guid: 27ee06d2a6b83084f8754acfeadfbc65, type: 3}
+  - {fileID: 21300000, guid: ac75dabb21cdd4e43b06217a4f07fdfa, type: 3}
+  - {fileID: 21300000, guid: 82f66eb6266fecc4aa4e36b46f4fd787, type: 3}
+  - {fileID: 21300000, guid: e0b96dab3f685714aa981827a70bb10f, type: 3}
+  - {fileID: 21300000, guid: c4e01bd26c0e12347a745b83b801c2fd, type: 3}
+  - {fileID: 21300000, guid: 211a6dd3b4c0a4b4d97e65082a257161, type: 3}
+  - {fileID: 21300000, guid: 6e26dd0c50265b145bdb44f2e88057b6, type: 3}
+  - {fileID: 21300000, guid: 85c4ed9cdc21ae34e9b3230272541710, type: 3}
+  - {fileID: 21300000, guid: dea67eaf6f22d7d46ba764fc0ea0620b, type: 3}
   gm: {fileID: 521198916}
+  introBGM: {fileID: 8300000, guid: ca4bcd096829a46459beef7782246765, type: 3}
 --- !u!4 &1622096000
 Transform:
   m_ObjectHideFlags: 0
@@ -611,6 +612,14 @@ PrefabInstance:
     - target: {fileID: 24707910017821758, guid: 5ec1b34d1c866294680dfaa1450ae378, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5140881630224585575, guid: 5ec1b34d1c866294680dfaa1450ae378, type: 3}
+      propertyPath: m_Volume
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6485019939965631734, guid: 5ec1b34d1c866294680dfaa1450ae378, type: 3}
+      propertyPath: m_Volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5ec1b34d1c866294680dfaa1450ae378, type: 3}

@@ -16,6 +16,7 @@ public class MenuSM : MonoBehaviour
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         gm.mainBGMLoader.clip = menuBGM;
+        StartCoroutine(gm.BGMON(gm.mainBGMLoader, 1));
         StartCoroutine( gm.LightOn(3));
         quarantineData = SaveDataScript.LoadFromJson();
         if (quarantineData == null)
@@ -29,13 +30,13 @@ public class MenuSM : MonoBehaviour
 
     public void GameStart()
     {
-        gm.mainBGMLoader.Stop();
+        StartCoroutine(gm.BGMOFF(gm.mainBGMLoader, 1));
         StartCoroutine(gm.QuarantineIn(3));
     }
 
     public void GameContinue()
     {
-        gm.mainBGMLoader.Stop();
+        StartCoroutine(gm.BGMOFF(gm.mainBGMLoader, 1));
         gm.quarantineData = quarantineData;
         StartCoroutine(gm.QuarantineIn(3));
     }

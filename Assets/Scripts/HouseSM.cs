@@ -45,6 +45,9 @@ public class HouseSM : MonoBehaviour
     //PauseMenu
     public PauseMenuManager pauseMenuManager;
     bool pauseMenuON = false;
+
+    //Music 2 Second check;
+    float music2Seconds = 0;
     
     private void Start()
     {
@@ -74,12 +77,22 @@ public class HouseSM : MonoBehaviour
         }
 
         pauseMenuManager.PauseOFF();
-        
+
+        //Playing Music
+        if (activityNum != -1)
+        {
+            StartCoroutine(gm.SideBGMON(activityNum));
+        }
+        else
+        {
+            StartCoroutine(gm.MainBGMON());
+        }
     }
     private void Update()
     {
         timer.text = (hours * 3600 + minutes * 60 + seconds) + "";
         secondCheck += Time.deltaTime;
+        music2Seconds += Time.deltaTime;
         
         //Seconds Flow
         if((activityNum != -1 && secondCheck >= 1.0 / Data.activityTimeValue[activityNum, upgradeProgress[activityNum]]) || secondCheck >= 1)
@@ -208,7 +221,27 @@ public class HouseSM : MonoBehaviour
         {
             PauseMenuONandOFF();
         }
-           
+        
+        //Playing Music
+        if(music2Seconds >= 2)
+        {
+            if (activityNum != -1)
+            {
+                if (gm.sideBGMLoader.isPlaying == false)
+                {
+                    StartCoroutine(gm.SideBGMON(activityNum));
+                }
+            }
+            else
+            {
+                if (gm.mainBGMLoader.isPlaying == false)
+                {
+                    StartCoroutine(gm.MainBGMON());
+                }
+
+            }
+            music2Seconds = 0;
+        }
     }
     public void Clicked()
     {
@@ -241,6 +274,9 @@ public class HouseSM : MonoBehaviour
                 activityText.text = "";
                 activateTexts[num].text = "Activate";
                 activityEnabled[num] = false;
+
+                //Music ON
+                StartCoroutine(gm.MainBGMON());
             }
             else
             {
@@ -252,6 +288,9 @@ public class HouseSM : MonoBehaviour
                 activityText.text = Data.activityName[num];
                 AddDurationCooldown(num);
                 activateTexts[num].text = "Stop";
+
+                //Music ON
+                StartCoroutine(gm.SideBGMON(activityNum));
             }
         }
         else
@@ -260,7 +299,11 @@ public class HouseSM : MonoBehaviour
             activityText.text = Data.activityName[num];
             AddDurationCooldown(num);
             activateTexts[num].text = "Stop";
+
+            //Music ON
+            StartCoroutine(gm.SideBGMON(activityNum));
         }
+
         
     }
 

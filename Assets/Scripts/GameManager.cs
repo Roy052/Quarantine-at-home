@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.IO;
+using System;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,6 +32,9 @@ public class GameManager : MonoBehaviour
     public AudioSource mainBGMLoader, sideBGMLoader;
     public List<AudioClip> mainBGMList = new List<AudioClip>();
     public List<AudioClip>[] sideBGMList = new List<AudioClip>[6];
+    int mainCurrent = -1;
+    public int[] sideCurrent = new int[6] { -1, -1, -1, -1, -1, -1 };
+
 
     private void Start()
     {
@@ -42,16 +46,68 @@ public class GameManager : MonoBehaviour
         mainBGMList.AddRange( Resources.LoadAll<AudioClip>("Music/Main/"));
 
         string debugText = "";
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 6; i++)
         {
             sideBGMList[i] = new List<AudioClip>();
             sideBGMList[i].AddRange(Resources.LoadAll<AudioClip>("Music/Side/" + i + "/"));
             debugText += i + " : " + sideBGMList[i].Count + ", ";
         }
         Debug.Log(debugText);
-            
+
+        //Mix
+        mainBGMList = mainBGMList.OrderBy(a => Guid.NewGuid()).ToList();
+        for (int i = 0; i < 1; i++)
+        {
+            sideBGMList[i] = sideBGMList[i].OrderBy(a => Guid.NewGuid()).ToList();
+        }
     }
 
+    public IEnumerator MainBGMON()
+    {
+        StartCoroutine(BGMOFF(sideBGMLoader, 1));
+        yield return new WaitForSeconds(1);
+        mainCurrent++;
+        if (mainCurrent >= mainBGMList.Count) mainCurrent = 0;
+        mainBGMLoader.clip = mainBGMList[mainCurrent];
+        StartCoroutine(BGMON(mainBGMLoader, 1));
+    }
+
+    public IEnumerator SideBGMON(int num)
+    {
+        if (num == -1) yield break;
+        StartCoroutine(BGMOFF(mainBGMLoader, 1));
+        yield return new WaitForSeconds(1);
+        sideCurrent[num]++;
+        if (sideCurrent[num] >= sideBGMList[num].Count) sideCurrent[num] = 0;
+        sideBGMLoader.clip = sideBGMList[num][sideCurrent[num]];
+        StartCoroutine(BGMON(sideBGMLoader, 1));
+    }
+
+    public IEnumerator BGMON(AudioSource audioSource, float time)
+    {
+        float tempVolume = 0;
+        audioSource.volume = tempVolume;
+
+        audioSource.Play();
+        while(tempVolume < 0.5f)
+        {
+            tempVolume += Time.deltaTime * 0.5f / time;
+            audioSource.volume = tempVolume;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public IEnumerator BGMOFF(AudioSource audioSource, float time)
+    {
+        float tempVolume = audioSource.volume;
+        while (tempVolume > 0)
+        {
+            tempVolume -= Time.deltaTime * 0.5f / time;
+            audioSource.volume = tempVolume;
+            yield return new WaitForEndOfFrame();
+        }
+        audioSource.Stop();
+    }
 
     public IEnumerator DayOver(float seconds)
     {
@@ -62,6 +118,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator QuarantineIn(float seconds)
     {
+        yield return new WaitForSeconds(1.1f);
         SceneManager.LoadScene("House");
         StartCoroutine(LightOn(seconds));
         yield return new WaitForSeconds(seconds);

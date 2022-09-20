@@ -608,6 +608,7 @@ MonoBehaviour:
   gameContinue: {fileID: 1647540069}
   quit: {fileID: 1317197578}
   gameContinueText: {fileID: 402216427}
+  menuBGM: {fileID: 8300000, guid: 7a740ce36a00edd4aba1651f152d8e02, type: 3}
 --- !u!4 &693234014
 Transform:
   m_ObjectHideFlags: 0

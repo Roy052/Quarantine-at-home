@@ -11170,6 +11170,10 @@ PrefabInstance:
       propertyPath: quarantineData.activityEnabled.Array.data[5]
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5140881630224585575, guid: 5ec1b34d1c866294680dfaa1450ae378, type: 3}
+      propertyPath: m_Volume
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5502643557696164474, guid: 5ec1b34d1c866294680dfaa1450ae378, type: 3}
       propertyPath: m_RootOrder
       value: 1
