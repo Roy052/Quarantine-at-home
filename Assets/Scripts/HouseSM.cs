@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,7 +47,11 @@ public class HouseSM : MonoBehaviour
     bool pauseMenuON = false;
 
     //Music 2 Second check;
+    int beforeActivityNum = -1;
     float music2Seconds = 0;
+
+    //LockObject
+    public GameObject Lock1, Lock2, Lock3_1, Lock3_2;
     
     private void Start()
     {
@@ -64,6 +68,21 @@ public class HouseSM : MonoBehaviour
         expText.text = exp + "/" + Data.expGaps[level];
         expSlider.value = exp / Data.expGaps[level];
         levelText.text = level + "";
+
+        //Lock Disable
+        if(level >= 1)
+        {
+            Lock1.SetActive(false);
+            if(level >= 2)
+            {
+                Lock2.SetActive(false);
+                if (level >= 3)
+                {
+                    Lock3_1.SetActive(false);
+                    Lock3_2.SetActive(false);
+                }
+            }
+        }
 
         
         for (int i = 0; i < 6; i++)
@@ -91,6 +110,10 @@ public class HouseSM : MonoBehaviour
     private void Update()
     {
         timer.text = (hours * 3600 + minutes * 60 + seconds) + "";
+        if (activityNum == -1)
+            musicText.text = gm.mainBGMLoader.clip.name;
+        else
+            musicText.text = gm.sideBGMLoader.clip.name;
         secondCheck += Time.deltaTime;
         music2Seconds += Time.deltaTime;
         
@@ -114,6 +137,7 @@ public class HouseSM : MonoBehaviour
             else
             {
                 TimeFlows(1);
+                if (level >= 5) TimeFlows(1);
             }
 
 
@@ -163,11 +187,16 @@ public class HouseSM : MonoBehaviour
 
         if(dayEnd == false)
         {
-            if (quarantineday == 7 && hours >= 24)
+            if (quarantineday == 7)
             {
-                dayEnd = true;
-                SaveDataScript.DeleteSave();
-                gm.QuarantineEnd();
+                if(hours >= 24)
+                {
+                    dayEnd = true;
+                    SaveDataScript.DeleteSave();
+                    if (activityNum == -1) StartCoroutine(gm.BGMOFF(gm.mainBGMLoader, 3));
+                    else StartCoroutine(gm.BGMOFF(gm.sideBGMLoader, 3));
+                    StartCoroutine( gm.QuarantineEnd(3));
+                }
             }
             else
             {
@@ -180,6 +209,8 @@ public class HouseSM : MonoBehaviour
                     gm.AutoSave(quarantineData);
                     dayEnd = true;
 
+                    if (activityNum == -1) StartCoroutine(gm.BGMOFF(gm.mainBGMLoader, 3));
+                    else StartCoroutine(gm.BGMOFF(gm.sideBGMLoader, 3));
                     StartCoroutine(gm.DayOver(3));
                 }
             }
@@ -225,22 +256,26 @@ public class HouseSM : MonoBehaviour
         //Playing Music
         if(music2Seconds >= 2)
         {
-            if (activityNum != -1)
+            if(beforeActivityNum == activityNum)
             {
-                if (gm.sideBGMLoader.isPlaying == false)
+                if (activityNum != -1)
                 {
-                    StartCoroutine(gm.SideBGMON(activityNum));
+                    if (gm.sideBGMLoader.isPlaying == false)
+                    {
+                        StartCoroutine(gm.SideBGMON(activityNum));
+                    }
                 }
-            }
-            else
-            {
-                if (gm.mainBGMLoader.isPlaying == false)
+                else
                 {
-                    StartCoroutine(gm.MainBGMON());
-                }
+                    if (gm.mainBGMLoader.isPlaying == false)
+                    {
+                        StartCoroutine(gm.MainBGMON());
+                    }
 
+                }
+                music2Seconds = 0;
             }
-            music2Seconds = 0;
+            beforeActivityNum = activityNum;
         }
     }
     public void Clicked()
@@ -248,13 +283,19 @@ public class HouseSM : MonoBehaviour
         if(activityNum == -1)
         {
             TimeFlows(1);
+            if (level >= 4) TimeFlows(1);
+            if (level >= 7) TimeFlows(1);
         }
         else
         {
             TimeFlows(Data.activityClickValue[activityNum, upgradeProgress[activityNum]]);
+            if(level >= 4) TimeFlows(Data.activityClickValue[activityNum, upgradeProgress[activityNum]]);
+            if(level >= 7) TimeFlows(Data.activityClickValue[activityNum, upgradeProgress[activityNum]]);
         }
         
         GainExp(1);
+        if (level >= 4) GainExp(1);
+        if (level >= 7) GainExp(1);
     }
 
     public void ActivityON(int num)
@@ -429,6 +470,15 @@ public class HouseSM : MonoBehaviour
         expSlider.value = exp / (float)Data.expGaps[level];
         expText.text = exp + "/" + Data.expGaps[level];
         levelText.text = level + "";
+
+        //Lock Disable
+        if (level == 1) Lock1.SetActive(false);
+        else if (level == 2) Lock2.SetActive(false);
+        else if(level == 3)
+        {
+            Lock3_1.SetActive(false);
+            Lock3_2.SetActive(false);
+        }
     }
 
     public void ToMenu()

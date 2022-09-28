@@ -39,27 +39,27 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         sceneMovementChanger.SetActive(false);
+    }
 
-        //BGMLoad
-
+    public IEnumerator MainBGMLoad()
+    {
         //Main
-        mainBGMList.AddRange( Resources.LoadAll<AudioClip>("Music/Main/"));
+        mainBGMList.AddRange(Resources.LoadAll<AudioClip>("Music/Main/"));
 
-        string debugText = "";
+
+        //Mix
+        mainBGMList = mainBGMList.OrderBy(a => Guid.NewGuid()).ToList();
+
+        yield return new WaitForEndOfFrame();
+    }
+    public IEnumerator SideBGMLoad()
+    {
         for (int i = 0; i < 6; i++)
         {
             sideBGMList[i] = new List<AudioClip>();
             sideBGMList[i].AddRange(Resources.LoadAll<AudioClip>("Music/Side/" + i + "/"));
-            debugText += i + " : " + sideBGMList[i].Count + ", ";
         }
-        Debug.Log(debugText);
-
-        //Mix
-        mainBGMList = mainBGMList.OrderBy(a => Guid.NewGuid()).ToList();
-        for (int i = 0; i < 1; i++)
-        {
-            sideBGMList[i] = sideBGMList[i].OrderBy(a => Guid.NewGuid()).ToList();
-        }
+        yield return new WaitForEndOfFrame();
     }
 
     public IEnumerator MainBGMON()
@@ -124,8 +124,10 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(seconds);
     }
 
-    public void QuarantineEnd()
+    public IEnumerator QuarantineEnd(float seconds)
     {
+        StartCoroutine(LightOff(seconds));
+        yield return new WaitForSeconds(seconds);
         SceneManager.LoadScene("End");
     }
     
@@ -141,7 +143,6 @@ public class GameManager : MonoBehaviour
 
     public void GameQuit()
     {
-        SaveDataScript.SaveIntoJson(quarantineData);
         Application.Quit();
     }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 public class EndSM : MonoBehaviour
 {
 
-    GameManager gm;
+    public GameManager gm;
     public Sprite[] endSprites;
     public GameObject endImage;
     public AudioClip endBGM;
@@ -20,6 +20,8 @@ public class EndSM : MonoBehaviour
 
     IEnumerator EndMovie()
     {
+        StartCoroutine(gm.LightOn(3));
+        yield return new WaitForSeconds(3);
         yield return new WaitForSeconds(4);
         endImage.GetComponent<SpriteRenderer>().sprite = endSprites[0];
         yield return new WaitForSeconds(4);
@@ -27,6 +29,7 @@ public class EndSM : MonoBehaviour
 
         yield return new WaitForSeconds(4);
 
+        StartCoroutine(gm.BGMOFF(gm.mainBGMLoader, 2));
         StartCoroutine( FadeManager.FadeOut(endImage.GetComponent<SpriteRenderer>(), 2));
         yield return new WaitForSeconds(2);
         gm.ToMenu();

@@ -44,6 +44,12 @@ TagManager:
   - name: UI
     uniqueID: 1939405653
     locked: 0
+  - name: Lock
+    uniqueID: 3538531777
+    locked: 0
+  - name: LevelInfo
+    uniqueID: 3437123439
+    locked: 0
   - name: PauseMenu
     uniqueID: 4074321545
     locked: 0

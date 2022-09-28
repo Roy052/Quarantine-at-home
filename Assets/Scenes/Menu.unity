@@ -608,7 +608,7 @@ MonoBehaviour:
   gameContinue: {fileID: 1647540069}
   quit: {fileID: 1317197578}
   gameContinueText: {fileID: 402216427}
-  menuBGM: {fileID: 8300000, guid: 7a740ce36a00edd4aba1651f152d8e02, type: 3}
+  menuBGM: {fileID: 8300000, guid: 051efdaf4eadb884f98fee48e4c93142, type: 3}
 --- !u!4 &693234014
 Transform:
   m_ObjectHideFlags: 0
@@ -997,6 +997,7 @@ GameObject:
   - component: {fileID: 1317197580}
   - component: {fileID: 1317197579}
   - component: {fileID: 1317197578}
+  - component: {fileID: 1317197581}
   m_Layer: 5
   m_Name: GameQuit
   m_TagString: Untagged
@@ -1119,6 +1120,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1317197576}
   m_CullTransparentMesh: 1
+--- !u!114 &1317197581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317197576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8918fc7bf37e343429913de012450186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 1317197578}
 --- !u!1 &1647540067
 GameObject:
   m_ObjectHideFlags: 0

@@ -278,11 +278,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2df8a6dff2a29b842bfa790103a6b07e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gm: {fileID: 0}
   endSprites:
   - {fileID: 21300000, guid: 74946bd72c2f9d34e8b3e3211baaada5, type: 3}
   - {fileID: 21300000, guid: 69796373397547c45b311b4d0c94fbff, type: 3}
   endImage: {fileID: 155162218}
-  endBGM: {fileID: 0}
+  endBGM: {fileID: 8300000, guid: dac2247ec50a4bd489d398ef596cfed5, type: 3}
 --- !u!1001 &1434900868
 PrefabInstance:
   m_ObjectHideFlags: 0
