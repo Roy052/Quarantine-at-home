@@ -37,14 +37,13 @@
       처음으로 원래 기획만큼 게임을 제작했다.<br><br>
       물론 기간이 조금 길어지긴 했지만 아이디어를 완전히 구현해보는 경험이 되었다.<br><br>
       json을 활용한 데이터 저장 불러오기 기능을 구현하며 System IO에 대해 알게 되었다.<br><br>
-      <br><br>
+      또한 파일을 로드할 때 생기는 부하를 고려한 코루틴을 활용한 애니메이션을 만들고 이를 모듈화 해보았다.<br><br>
   </div>
   <div>
     <h2> 수정할 점 </h2>
-      컨텐츠를 추가한다.
+      왼쪽 편에 활동에 따른 애니메이션을 추가한다.
    <h2> Design Picture </h2>
    <table>
-        <td><img src = "https://postfiles.pstatic.net/MjAyMjA4MDFfMjcy/MDAxNjU5MzMwODAxOTk1.-gbZMXUDyhOMz_i8yUj_aAh4hzSgm6293HBrNPNIvTAg.ZZtycSu828JGsjLCsBnqv03vtyKRWoA7w_eJ4Rt68qkg.JPEG.tdj04131/KakaoTalk_20220801_141114267_03.jpg?type=w773" height = 500></td>
-     <td><img src = "https://postfiles.pstatic.net/MjAyMjA4MDFfMTI3/MDAxNjU5MzMwODAxOTI1.GWwJzBX5V1b-ubqEyGZDpCZPxJOMTC3ju36pHG82cYQg.lAN9ou64svdpNpIa3q-vCsura4jk8hso3nfKY1Vb6Xgg.JPEG.tdj04131/KakaoTalk_20220801_141114267_04.jpg?type=w773" height = 500></td>
+        <td><img src = "https://postfiles.pstatic.net/MjAyMjEwMDJfMjk2/MDAxNjY0Njc2MzY5OTc5.e0zxnwIelrGkbocZWSokgdMbbhFBPVnP0MyToqpH3eYg.3J6IUib14K1U9JXzR-GFlaajXtqsRauJZSh_RKb8XUkg.JPEG.tdj04131/20221002%EF%BC%BF110334.jpg?type=w773" height = 500></td>
       </table>
   </div>
