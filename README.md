@@ -47,3 +47,73 @@
         <td><img src = "https://postfiles.pstatic.net/MjAyMjEwMDJfMjk2/MDAxNjY0Njc2MzY5OTc5.e0zxnwIelrGkbocZWSokgdMbbhFBPVnP0MyToqpH3eYg.3J6IUib14K1U9JXzR-GFlaajXtqsRauJZSh_RKb8XUkg.JPEG.tdj04131/20221002%EF%BC%BF110334.jpg?type=w773" height = 500></td>
       </table>
   </div>
+
+   <div>
+       <h2> 주요 코드 </h2>
+       <h4> BGM Load 하는 코드 </h4>
+    </div>
+    
+```csharp
+public IEnumerator MainBGMLoad()
+{
+    //Main
+    mainBGMList.AddRange(Resources.LoadAll<AudioClip>("Music/Main/"));
+
+    //Mix
+    mainBGMList = mainBGMList.OrderBy(a => Guid.NewGuid()).ToList();
+
+    yield return new WaitForEndOfFrame();
+}
+
+public IEnumerator SideBGMLoad()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        sideBGMList[i] = new List<AudioClip>();
+        sideBGMList[i].AddRange(Resources.LoadAll<AudioClip>("Music/Side/" + i + "/"));
+    }
+    yield return new WaitForEndOfFrame();
+}
+``` 
+
+<div>
+<h4> 데이터 저장/불러오기 </h4>
+</div>
+
+```csharp
+static public void SaveIntoJson(QuarantineData quarantineData)
+{
+    QuarantineData saveData = quarantineData;
+    string quarantine = JsonUtility.ToJson(quarantineData);
+    File.WriteAllText("./Assets/Save/" + "SaveData.json", quarantine);
+}
+
+static public QuarantineData LoadFromJson()
+{
+    try
+    {
+        string path = "./Assets/Save/SaveData.json";
+        Debug.Log(path);
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            Debug.Log(json);
+            QuarantineData qd = JsonUtility.FromJson<QuarantineData>(json);
+            return qd;
+        }
+    }
+    catch (FileNotFoundException e)
+    {
+        Debug.Log("The file was not found:" + e.Message);
+    }
+    catch (DirectoryNotFoundException e)
+    {
+        Debug.Log("The directory was not found: " + e.Message);
+    }
+    catch (IOException e)
+    {
+        Debug.Log("The file could not be opened:" + e.Message);
+    }
+    return default;
+}
+```
